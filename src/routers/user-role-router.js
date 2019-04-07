@@ -22,4 +22,23 @@ router.post('/users/:userId/role/:roleId', async (req, res) => {
     }
 });
 
+router.delete('/users/:userId/role/:roleId', async (req, res) => {
+    try {
+        const user = await User.findOne({
+            _id: req.params.userId,
+            roles: [req.params.roleId]
+        });
+
+        if(user) {
+            user.roles = user.roles.filter(role => role.toString() !== req.params.roleId);
+            user.save();
+            res.send(user);
+        }else {
+            res.status(404).send();
+        }
+    } catch(e) {
+        res.status(500).send();
+    }
+});
+
 module.exports = router;

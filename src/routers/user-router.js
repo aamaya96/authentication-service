@@ -16,8 +16,8 @@ router.get('/users/:id', async (req, res) => {
 
     try {
         const user = await User.findById(_id);
-
         if(user) {
+            await user.populate('roles').execPopulate();
             res.send(user);
         }else{
             res.status(404).send();
