@@ -5,6 +5,7 @@ const loginRouter = require('./routers/login-router');
 const userRouter = require('./routers/user-router');
 const roleRouter = require('./routers/role-router');
 const userRoleRouter = require('./routers/user-role-router');
+const meRouter = require('./routers/me-router');
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -14,6 +15,7 @@ app.use(loginRouter);
 app.use(userRouter);
 app.use(roleRouter);
 app.use(userRoleRouter);
+app.use(meRouter);
 
 app.listen(port, () => {
     console.log('Server is up on port ' + port);

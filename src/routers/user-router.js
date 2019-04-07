@@ -41,7 +41,6 @@ router.post('/users', async (req, res) => {
 router.patch('/users/:id', async (req, res) => {
     const allowedUpdates = ['firstName', 'email', 'lastName', 'password'];
     const updates = Object.keys(req.body);
-
     const isValidUpdate = updates.every((update) => allowedUpdates.includes(update));
 
     if(!isValidUpdate) {
