@@ -1,5 +1,5 @@
 const express = require('express');
-const User = require('../db/mongoose/models/user-model');
+const User = require('../db/models/user-model');
 const router = new express.Router();
 
 router.get('/users', async (req, res) => {

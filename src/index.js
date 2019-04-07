@@ -1,4 +1,4 @@
-require('./db/mongoose/connection');
+require('./db/connection');
 const express = require('express');
 const userRouter = require('./routers/user-router');
 const roleRouter = require('./routers/role-router');

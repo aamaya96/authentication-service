@@ -1,5 +1,5 @@
 const express = require('express');
-const Role = require('../db/mongoose/models/role-model');
+const Role = require('../db/models/role-model');
 const router = new express.Router();
 
 router.get('/roles', async (req, res) => {
