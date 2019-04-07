@@ -23,7 +23,7 @@ router.get('/users/:id', async (req, res) => {
             res.status(404).send();
         }
     } catch(e) {
-
+        res.status(500).send();
     }
 });
 
