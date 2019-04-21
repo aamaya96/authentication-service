@@ -1,8 +1,9 @@
 const express = require('express');
 const User = require('../db/models/user-model');
 const router = new express.Router();
+const auth = require('../middleware/auth');
 
-router.get('/users', async (req, res) => {
+router.get('/users', auth, async (req, res) => {
     try {
         const users = await User.find({});
         res.send(users);
@@ -11,13 +12,15 @@ router.get('/users', async (req, res) => {
     }
 });
 
-router.get('/users/:id', async (req, res) => {
+router.get('/users/:id', auth, async (req, res) => {
     const _id = req.params.id;
 
     try {
         const user = await User.findById(_id);
         if(user) {
             await user.populate('roles').execPopulate();
+            await user.populate('management.createdBy').execPopulate();
+            await user.populate('management.updatedBy').execPopulate();
             res.send(user);
         }else{
             res.status(404).send();
@@ -27,10 +30,21 @@ router.get('/users/:id', async (req, res) => {
     }
 });
 
-router.post('/users', async (req, res) => {
-    const user = new User(req.body);
+router.post('/users', auth, async (req, res) => {
+
+    const management = {
+        created: new Date().getTime(),
+        createdBy: req.user._id,
+        updated: new Date().getTime(),
+        updatedBy: req.user._id
+    };
+    const user = new User({
+        ...req.body,
+        management
+    });
 
     try {
+        await user.populate('role').execPopulate();
         await user.save();
         res.status(201).send(user);
     } catch(e) {
@@ -38,7 +52,7 @@ router.post('/users', async (req, res) => {
     }
 });
 
-router.patch('/users/:id', async (req, res) => {
+router.patch('/users/:id', auth, async (req, res) => {
     const allowedUpdates = ['firstName', 'email', 'lastName', 'password'];
     const updates = Object.keys(req.body);
     const isValidUpdate = updates.every((update) => allowedUpdates.includes(update));
@@ -55,6 +69,8 @@ router.patch('/users/:id', async (req, res) => {
         }
         
         updates.forEach( update => user[update] = req.body[update]);
+        user.management.updated = new Date().getTime();
+        user.management.updatedBy = req.user._id;
         await user.save();
         res.send(user);
 
@@ -64,7 +80,7 @@ router.patch('/users/:id', async (req, res) => {
     
 });
 
-router.delete('/users/:id', async (req, res) => {
+router.delete('/users/:id', auth, async (req, res) => {
     try {
         const user = await User.findByIdAndDelete(req.params.id);
         

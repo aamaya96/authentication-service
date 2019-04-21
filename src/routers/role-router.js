@@ -1,8 +1,9 @@
 const express = require('express');
 const Role = require('../db/models/role-model');
+const auth = require('../middleware/auth');
 const router = new express.Router();
 
-router.get('/roles', async (req, res) => {
+router.get('/roles', auth, async (req, res) => {
     try{
         const roles = await Role.find({});
         res.send(roles);
@@ -11,7 +12,7 @@ router.get('/roles', async (req, res) => {
     }
 });
 
-router.get('/roles/:id', async (req, res) => {
+router.get('/roles/:id', auth, async (req, res) => {
     const _id = req.params.id;
 
     try {
@@ -27,7 +28,7 @@ router.get('/roles/:id', async (req, res) => {
     }
 });
 
-router.post('/roles', async (req, res) => {
+router.post('/roles', auth, async (req, res) => {
     const role = new Role(req.body);
 
     try {
@@ -38,7 +39,7 @@ router.post('/roles', async (req, res) => {
     }
 });
 
-router.patch('/roles/:id', async (req, res) => {
+router.patch('/roles/:id', auth, async (req, res) => {
     const updates = Object.keys(req.body);
     const allowedUpdates = ['name'];
     const isValidUpdate = updates.every((update) => allowedUpdates.includes(update));
@@ -63,7 +64,7 @@ router.patch('/roles/:id', async (req, res) => {
     }
 });
 
-router.delete('/roles/:id', async (req, res) => {
+router.delete('/roles/:id', auth, async (req, res) => {
     try {
         const role = await Role.findByIdAndDelete(req.params.id);
 

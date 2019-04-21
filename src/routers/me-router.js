@@ -17,9 +17,10 @@ router.patch('/me', auth, async (req, res) => {
 
     try {
         updates.forEach( update => req.user[update] = req.body[update]);
+        req.user.management.updated = new Date().getTime();
+        req.user.management.updatedBy = req.user._id;
         await req.user.save();
         res.send(req.user);
-
     } catch(e) {
         res.status(400).send();
     }

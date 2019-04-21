@@ -32,10 +32,31 @@ const userSchema = new mongoose.Schema({
         minlength: 8,
         trim: true
     },
-    roles: [{
+    role: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Role'
-    }]
+        ref: 'Role',
+        required: true
+    },
+    management: {
+        created: {
+            type: Number,
+            required: true
+        },
+        createdBy: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'User',
+            required: true
+        },
+        updated: {
+            type: Number,
+            required: true
+        },
+        updatedBy: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'User',
+            required: true
+        }
+    }
 });
 
 userSchema.statics.findByCredentials = async (email, password) => {
@@ -56,12 +77,12 @@ userSchema.statics.findByCredentials = async (email, password) => {
 
 userSchema.methods.generateToken = async function() {
     const user = this;
-    await user.populate('roles').execPopulate();
+    await user.populate('role').execPopulate();
 
     //TODO: update key signature for JWT token
     const token = jwt.sign({ 
         _id: user._id.toString(), 
-        roles: user.roles.map(role => role.name)
+        role: user.role.name
     }, 'hello-world', { expiresIn: '1h' });
 
     return token;
@@ -85,6 +106,6 @@ userSchema.pre('save', async function(next) {
     next();
 });
 
-const User = mongoose.model('Users', userSchema);
+const User = mongoose.model('User', userSchema);
 
 module.exports = User;
